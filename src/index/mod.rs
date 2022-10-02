@@ -75,6 +75,18 @@ impl Index {
 
     pub async fn load() -> Result<(), serde_json::Error> {
         debug!("Loading index...");
+        let data_folder = BotConfig::get().data_folder.clone();
+        match data_folder.try_exists() {
+            Ok(exists) => {
+                if !exists {
+                    debug!("Data folder does not exist, creating it...");
+                    std::fs::create_dir_all(data_folder).expect("Failed to create data folder");
+                }
+            }
+            Err(err) => {
+                error!("Failed to check data folder: {err}");
+            }
+        }
         let mut index = match read_to_string(Self::index_path()).await {
             Ok(index) => serde_json::from_str(&index)?,
             Err(_) => Index::default(),
