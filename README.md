@@ -82,6 +82,8 @@ Either in a DM with your bot or in a server the bot is in, execute the slash com
 
 Once the indexing is finished, the response will be edited with a number of memes collected from each channel. **The bot is now ready to use! See [Usage](#usage).**
 
+You can use this command again at any time to refresh the index. After the initial index, it will only search through new messages, so refreshing is usually very fast.
+
 ### Updating the Bot of Greed
 
 #### Pull the changes
