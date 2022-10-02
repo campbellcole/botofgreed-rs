@@ -5,7 +5,7 @@ A Discord bot that allows you to rapidly retreive random messages from your meme
 <img align="left" alt="greed command" src="./assets/greed_command.png" width="45%" />
 <img alt="sauce button" src="./assets/sauce_button.png" width="45%">
 <img alt="info command" src="./assets/info_command.png" width="45%">
-<br/><br/>
+<br/>
 
 ### Usage
 
