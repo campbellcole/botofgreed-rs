@@ -19,22 +19,22 @@ impl Interactor {
     pub async fn create_interaction_response<'a>(
         &self,
         http: impl AsRef<Http>,
-        response: CreateInteractionResponse<'a>,
+        builder: CreateInteractionResponse<'a>,
     ) -> Result<()> {
         match self {
-            Self::Command(aci) => aci.create_interaction_response(http, response).await,
-            Self::Message(mci) => mci.create_interaction_response(http, response).await,
+            Self::Command(aci) => aci.create_interaction_response(http, builder).await,
+            Self::Message(mci) => mci.create_interaction_response(http, builder).await,
         }
     }
 
     pub async fn edit_original_interaction_response<'a>(
         &self,
         http: impl AsRef<Http>,
-        edit: EditInteractionResponse<'a>,
+        builder: EditInteractionResponse<'a>,
     ) -> Result<Message> {
         match self {
-            Self::Command(aci) => aci.edit_original_interaction_response(http, edit).await,
-            Self::Message(mci) => mci.edit_original_interaction_response(http, edit).await,
+            Self::Command(aci) => aci.edit_original_interaction_response(http, builder).await,
+            Self::Message(mci) => mci.edit_original_interaction_response(http, builder).await,
         }
     }
 
