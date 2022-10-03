@@ -9,15 +9,17 @@ pub mod op;
 
 pub type CommandResult<T = ()> = Result<T, serenity::Error>;
 
-/// `cmd_err!(interactor, http, pub_msg, internal_msg)`
+/// `cmd_err!([edit] interactor, http, pub_msg, internal_msg)`
 macro_rules! cmd_err {
     ($interactor:expr, $http:expr, $pub_msg:expr, $internal_msg:expr) => {{
-        use serenity::builder::EditInteractionResponse;
+        use serenity::builder::CreateInteractionResponse;
         error!($internal_msg);
         $interactor
-            .edit_original_interaction_response(
+            .create_interaction_response(
                 $http,
-                EditInteractionResponse::new().content($pub_msg),
+                CreateInteractionResponse::new().interaction_response_data(
+                    CreateInteractionResponseData::new().content($pub_msg),
+                ),
             )
             .await
             .map(|_| ())
