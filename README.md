@@ -115,11 +115,8 @@ If you changed the name of your docker service, change the commands according to
 After building the image several times, you may notice docker accumulating images. These can waste a huge amount of drive space (upwards of 10GB after just a few builds). These can be easily removed using the following command:
 
 ```console
-> docker image prune -f # -f skips confirmation
-> docker image prune -a -f # -a removes any unused images, not just dangling ones
+> docker image prune # -f to skip confirmation
 ```
-
-*If the only container you use is the Bot of Greed, both commands will always be safe. Use discretion otherwise.*
 
 ###### Note 1
 If you changed the name of the service, reflect it in docker commands:
