@@ -160,7 +160,7 @@ impl Index {
 
         for id in BotConfig::get().channel_ids.iter() {
             let state = channel_states.entry(*id).or_default();
-            let channel = match ctx.http.get_channel(id.get()).await {
+            let channel = match ctx.http.get_channel(ChannelId(*id)).await {
                 Ok(channel) => match channel {
                     Channel::Guild(guild) => guild,
                     _ => {

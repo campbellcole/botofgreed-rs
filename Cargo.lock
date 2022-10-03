@@ -1006,7 +1006,7 @@ dependencies = [
 [[package]]
 name = "serenity"
 version = "0.11.5"
-source = "git+https://github.com/serenity-rs/serenity?branch=next#34f5253ab21d165cdf6044fea8c60dfd776e9865"
+source = "git+https://github.com/serenity-rs/serenity?branch=next#93fa816f4aa47b213d069868109938e432aabe3d"
 dependencies = [
  "async-trait",
  "base64",
@@ -1076,9 +1076,9 @@ dependencies = [
 
 [[package]]
 name = "smallvec"
-version = "1.9.0"
+version = "1.10.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2fd0db749597d91ff862fd1d55ea87f7855a744a8425a64695b6fca237d1dad1"
+checksum = "a507befe795404456341dfab10cef66ead4c041f62b8b11bbb92bffe5d0953e0"
 
 [[package]]
 name = "snmalloc-rs"

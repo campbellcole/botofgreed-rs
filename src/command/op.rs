@@ -47,11 +47,26 @@ impl FromStr for EncodedOP {
 }
 
 pub async fn command(ctx: &Context, interactor: &Interactor, op: EncodedOP) -> CommandResult {
+    const ERR_MSG: &str = "Failed to retreive OP information";
+
     let EncodedOP {
         channel_id,
         message_id,
         ..
     } = op;
+
+    let channel_id = ChannelId(match channel_id.try_into() {
+        Ok(id) => id,
+        Err(err) => {
+            // this route will only be taken if the segment was a valid u64, but not a NonZeroU64
+            return cmd_err!(
+                interactor,
+                &ctx.http,
+                ERR_MSG,
+                "Encoded channel id was zero: {err}"
+            );
+        }
+    });
 
     let channel = match ctx.http.get_channel(channel_id).await {
         Ok(channel) => match channel {
@@ -60,7 +75,7 @@ pub async fn command(ctx: &Context, interactor: &Interactor, op: EncodedOP) -> C
                 return cmd_err!(
                     interactor,
                     &ctx.http,
-                    "Failed to retreive OP information",
+                    ERR_MSG,
                     "Attempted to retreive OP information from a non guild channel"
                 );
             }
@@ -69,7 +84,7 @@ pub async fn command(ctx: &Context, interactor: &Interactor, op: EncodedOP) -> C
             return cmd_err!(
                 interactor,
                 &ctx.http,
-                "Failed to retreive OP information",
+                ERR_MSG,
                 "Failed to get channel for OP information: {err}"
             );
         }
@@ -81,7 +96,7 @@ pub async fn command(ctx: &Context, interactor: &Interactor, op: EncodedOP) -> C
             return cmd_err!(
                 interactor,
                 &ctx.http,
-                "Failed to retreive OP information",
+                ERR_MSG,
                 "Failed to get message for OP information: {err}"
             );
         }
