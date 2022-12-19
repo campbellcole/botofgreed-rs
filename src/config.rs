@@ -20,6 +20,12 @@ impl TestSettings {
         format!("missing {seg} segment of TEST_FORCE_MEME=<guild_id>,<channel_id>,<message_id>,<attachment_url>")
     }
 
+    #[cfg(not(debug_assertions))]
+    pub fn from_env() -> Self {
+        Self::default()
+    }
+
+    #[cfg(debug_assertions)]
     pub fn from_env() -> Self {
         let mut test_settings = Self::default();
 
