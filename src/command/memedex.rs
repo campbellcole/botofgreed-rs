@@ -8,9 +8,9 @@ pub const COMMAND_NAME: &str = "nightly_memedex";
 pub const COMMAND_NAME: &str = "memedex";
 
 pub async fn register(ctx: &Context) -> CommandResult {
-    command::Command::create_global_application_command(
+    Command::create_global_application_command(
         &ctx.http,
-        CreateApplicationCommand::new(COMMAND_NAME).description("Refresh the meme database"),
+        CreateCommand::new(COMMAND_NAME).description("Refresh the meme database"),
     )
     .await
     .map(|_| debug!("registered `{COMMAND_NAME}` command globally"))
@@ -18,10 +18,10 @@ pub async fn register(ctx: &Context) -> CommandResult {
 
 pub async fn command(ctx: &Context, interactor: &Interactor) -> CommandResult {
     interactor
-        .create_interaction_response(
+        .create_response(
             &ctx.http,
-            CreateInteractionResponse::new().interaction_response_data(
-                CreateInteractionResponseData::new().content("Refreshing index..."),
+            CreateInteractionResponse::Message(
+                CreateInteractionResponseMessage::new().content("Refreshing index..."),
             ),
         )
         .await?;
@@ -45,7 +45,7 @@ pub async fn command(ctx: &Context, interactor: &Interactor) -> CommandResult {
     }
 
     interactor
-        .edit_original_interaction_response(
+        .edit_response(
             &ctx.http,
             EditInteractionResponse::new().content(status_str),
         )

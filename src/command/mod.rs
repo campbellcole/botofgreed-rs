@@ -15,10 +15,10 @@ macro_rules! cmd_err {
         use serenity::builder::CreateInteractionResponse;
         error!($internal_msg);
         $interactor
-            .create_interaction_response(
+            .create_response(
                 $http,
-                CreateInteractionResponse::new().interaction_response_data(
-                    CreateInteractionResponseData::new().content($pub_msg),
+                CreateInteractionResponse::Message(
+                    CreateInteractionResponseMessage::new().content($pub_msg),
                 ),
             )
             .await

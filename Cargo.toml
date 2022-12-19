@@ -1,6 +1,6 @@
 [package]
 name = "botofgreed-rs"
-version = "2.3.2"
+version = "2.4.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
@@ -23,8 +23,9 @@ serde_repr = "0.1.9"
 url = "2"
 chrono = { version = "0.4.22", features = ["serde"] }
 humantime = "2.1.0"
+emojis = "0.5"
 
-serenity = { version = "*", default-features = false, features = [
+serenity = { version = "0.11", default-features = false, features = [
     "cache",
     "client",
     "gateway",

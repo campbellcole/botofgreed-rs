@@ -45,11 +45,11 @@ pub fn init_logging() {
                 .appender("stdout")
                 .build("botofgreed_rs", LevelFilter::Trace),
         )
-        // .logger(
-        //     Logger::builder()
-        //         .appender("serenity_file")
-        //         .build("serenity", LevelFilter::Debug),
-        // )
+        .logger(
+            Logger::builder()
+                .appender("stdout")
+                .build("serenity", LevelFilter::Debug),
+        )
         .build(Root::builder().build(LevelFilter::Off))
         .expect("failed to build config");
 

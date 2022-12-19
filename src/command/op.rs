@@ -103,10 +103,10 @@ pub async fn command(ctx: &Context, interactor: &Interactor, op: EncodedOP) -> C
     };
 
     interactor
-        .create_interaction_response(
+        .create_response(
             &ctx.http,
-            CreateInteractionResponse::new().interaction_response_data(
-                CreateInteractionResponseData::new()
+            CreateInteractionResponse::Message(
+                CreateInteractionResponseMessage::new()
                     .embed(
                         CreateEmbed::new()
                             .colour(Colour::from_rgb(149, 54, 161))
@@ -117,17 +117,10 @@ pub async fn command(ctx: &Context, interactor: &Interactor, op: EncodedOP) -> C
                             .timestamp(message.timestamp)
                             .footer(CreateEmbedFooter::new(channel.name())),
                     )
-                    .components(
-                        CreateComponents::new().add_action_row(
-                            CreateActionRow::new()
-                                .add_button(
-                                    CreateButton::new_link(op.message_link()).label("Message"),
-                                )
-                                .add_button(
-                                    CreateButton::new_link(op.channel_link()).label("Channel"),
-                                ),
-                        ),
-                    ),
+                    .components(vec![CreateActionRow::Buttons(vec![
+                        CreateButton::new_link(op.message_link()).label("Message"),
+                        CreateButton::new_link(op.channel_link()).label("Channel"),
+                    ])]),
             ),
         )
         .await

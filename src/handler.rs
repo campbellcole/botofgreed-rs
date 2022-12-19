@@ -1,16 +1,18 @@
-use crate::{command::interactor::Interactor, prelude::*};
 use serenity::gateway::ActivityData;
+
+use crate::{command::interactor::Interactor, prelude::*};
+// use serenity::gateway::ActivityData;
 
 pub struct GreedHandler;
 
 #[async_trait]
 impl EventHandler for GreedHandler {
     async fn interaction_create(&self, ctx: Context, interaction: Interaction) {
-        if let Interaction::ApplicationCommand(cmd) = interaction {
+        if let Interaction::Command(cmd) = interaction {
             let cmd_str = cmd.data.name.clone();
             let interactor = Interactor::Command(Box::new(cmd));
             crate::command::handle_command(&cmd_str, &ctx, &interactor).await;
-        } else if let Interaction::MessageComponent(cmd) = interaction {
+        } else if let Interaction::Component(cmd) = interaction {
             let cmd_str = cmd.data.custom_id.clone();
             let interactor = Interactor::Message(Box::new(cmd));
             crate::command::handle_command(&cmd_str, &ctx, &interactor).await;

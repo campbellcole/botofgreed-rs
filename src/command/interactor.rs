@@ -1,40 +1,34 @@
 use crate::prelude::*;
-use serenity::{
-    http::Http,
-    model::prelude::interaction::{
-        application_command::ApplicationCommandInteraction,
-        message_component::MessageComponentInteraction,
-    },
-};
+use serenity::http::Http;
 use std::result::Result as StdResult;
 
 type Result<T> = StdResult<T, serenity::Error>;
 
 pub enum Interactor {
-    Command(Box<ApplicationCommandInteraction>),
-    Message(Box<MessageComponentInteraction>),
+    Command(Box<CommandInteraction>),
+    Message(Box<ComponentInteraction>),
 }
 
 impl Interactor {
-    pub async fn create_interaction_response<'a>(
+    pub async fn create_response(
         &self,
         http: impl AsRef<Http>,
-        builder: CreateInteractionResponse<'a>,
+        builder: CreateInteractionResponse,
     ) -> Result<()> {
         match self {
-            Self::Command(aci) => aci.create_interaction_response(http, builder).await,
-            Self::Message(mci) => mci.create_interaction_response(http, builder).await,
+            Self::Command(aci) => aci.create_response(http, builder).await,
+            Self::Message(mci) => mci.create_response(http, builder).await,
         }
     }
 
-    pub async fn edit_original_interaction_response<'a>(
+    pub async fn edit_response(
         &self,
         http: impl AsRef<Http>,
-        builder: EditInteractionResponse<'a>,
+        builder: EditInteractionResponse,
     ) -> Result<Message> {
         match self {
-            Self::Command(aci) => aci.edit_original_interaction_response(http, builder).await,
-            Self::Message(mci) => mci.edit_original_interaction_response(http, builder).await,
+            Self::Command(aci) => aci.edit_response(http, builder).await,
+            Self::Message(mci) => mci.edit_response(http, builder).await,
         }
     }
 

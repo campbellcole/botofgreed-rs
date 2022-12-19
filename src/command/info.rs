@@ -12,10 +12,9 @@ pub const COMMAND_NAME: &str = "nightly_info";
 pub const COMMAND_NAME: &str = "info";
 
 pub async fn register(ctx: &Context) -> CommandResult {
-    command::Command::create_global_application_command(
+    Command::create_global_application_command(
         &ctx.http,
-        CreateApplicationCommand::new(COMMAND_NAME)
-            .description("Print information about Bot of Greed"),
+        CreateCommand::new(COMMAND_NAME).description("Print information about Bot of Greed"),
     )
     .await
     .map(|_| debug!("registered `{COMMAND_NAME}` command globally"))
@@ -41,10 +40,11 @@ pub async fn command(ctx: &Context, interactor: &Interactor) -> CommandResult {
     let info = format!("```\nVersion: {VERSION}\nLast indexed at: {last_indexed}\nMemes indexed: {meme_count}\nUptime: {uptime}\n```");
 
     interactor
-        .create_interaction_response(
+        .create_response(
             &ctx.http,
-            CreateInteractionResponse::new()
-                .interaction_response_data(CreateInteractionResponseData::new().content(info)),
+            CreateInteractionResponse::Message(
+                CreateInteractionResponseMessage::new().content(info),
+            ),
         )
         .await
 }

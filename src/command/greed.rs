@@ -3,7 +3,6 @@ use crate::{
     index::{use_index, Index},
     prelude::*,
 };
-use serenity::model::prelude::component::ButtonStyle;
 
 #[cfg(debug_assertions)]
 pub const COMMAND_NAME: &str = "nightly_greed";
@@ -12,9 +11,9 @@ pub const COMMAND_NAME: &str = "nightly_greed";
 pub const COMMAND_NAME: &str = "greed";
 
 pub async fn register(ctx: &Context) -> CommandResult {
-    command::Command::create_global_application_command(
+    Command::create_global_application_command(
         &ctx.http,
-        CreateApplicationCommand::new(COMMAND_NAME).description("Retreive a random meme"),
+        CreateCommand::new(COMMAND_NAME).description("Retreive a random meme"),
     )
     .await
     .map(|_| debug!("registered `{COMMAND_NAME}` command globally"))
@@ -32,43 +31,75 @@ pub async fn command(ctx: &Context, interactor: &Interactor) -> CommandResult {
                     crate::command::memedex::COMMAND_NAME
                 ),
                 "Failed to retreive a meme"
-            );
+            )
         }
     };
 
+    let msg = ctx
+        .http
+        .get_message(meme.channel_id().into(), meme.message_id().get().into())
+        .await;
+
+    if let Ok(msg) = msg {
+        let mut emoji_reactions =
+            msg.reactions
+                .iter()
+                .filter_map(|reaction| match reaction.reaction_type {
+                    ReactionType::Unicode(ref unicode) => Some(unicode),
+                    _ => None,
+                });
+
+        let unused_emoji = emojis::iter()
+            .find(|emoji| !emoji_reactions.any(|reaction| reaction == emoji.as_str()));
+
+        if let Some(emoji) = unused_emoji {
+            if let Err(err) = ctx
+                .http
+                .create_reaction(
+                    meme.channel_id().into(),
+                    meme.message_id().into(),
+                    &ReactionType::Unicode(emoji.to_string()),
+                )
+                .await
+            {
+                error!("failed to react to original message: {err}");
+            }
+        } else {
+            warn!(
+                "failed to find an unused emoji to react to message with: {}/{}",
+                meme.channel_id(),
+                meme.message_id()
+            );
+        }
+    } else {
+        error!("could not get original message to react to, just sending the meme");
+    };
+
     interactor
-        .create_interaction_response(
+        .create_response(
             &ctx.http,
-            CreateInteractionResponse::new().interaction_response_data(
-                CreateInteractionResponseData::new()
+            CreateInteractionResponse::Message(
+                CreateInteractionResponseMessage::new()
                     .content(format!(
                         "Triggered by <@{}>\n{}",
                         interactor.user().id.0,
                         &meme.meme().url,
                     ))
-                    .components(
-                        CreateComponents::new().add_action_row(
-                            CreateActionRow::new()
-                                .add_button(
-                                    CreateButton::new(ButtonStyle::Primary, COMMAND_NAME)
-                                        .emoji('\u{267B}')
-                                        .label("I'm feeling Greedy"),
-                                )
-                                .add_button(
-                                    CreateButton::new(
-                                        ButtonStyle::Primary,
-                                        format!(
-                                            "op_{}_{}_{}",
-                                            meme.guild_id(),
-                                            meme.channel_id(),
-                                            meme.message_id(),
-                                        ),
-                                    )
-                                    .emoji('\u{2049}')
-                                    .label("sauce??"),
-                                ),
-                        ),
-                    )
+                    .components(vec![CreateActionRow::Buttons(vec![
+                        CreateButton::new(COMMAND_NAME)
+                            .style(ButtonStyle::Primary)
+                            .emoji('\u{267B}')
+                            .label("I'm feeling Greedy"),
+                        CreateButton::new(format!(
+                            "op_{}_{}_{}",
+                            meme.guild_id(),
+                            meme.channel_id(),
+                            meme.message_id(),
+                        ))
+                        .style(ButtonStyle::Primary)
+                        .emoji('\u{2049}')
+                        .label("sauce??"),
+                    ])])
                     .allowed_mentions(CreateAllowedMentions::new().all_users(true)),
             ),
         )
