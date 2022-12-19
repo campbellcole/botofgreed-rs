@@ -39,7 +39,11 @@ pub struct Index {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct IndexedMeme(NonZeroU64, NonZeroU64, GreedMeme);
+pub struct IndexedMeme(
+    pub(crate) NonZeroU64,
+    pub(crate) NonZeroU64,
+    pub(crate) GreedMeme,
+);
 
 impl IndexedMeme {
     pub fn guild_id(&self) -> NonZeroU64 {
@@ -134,6 +138,13 @@ impl Index {
     }
 
     pub async fn get_random_meme(&self) -> Option<&IndexedMeme> {
+        #[cfg(debug_assertions)]
+        if let Some(ref test_settings) = BotConfig::get().test_settings {
+            if let Some(ref force_meme) = test_settings.force_meme {
+                return Some(force_meme);
+            }
+        }
+
         if self.all_memes.is_empty() {
             return None;
         }
