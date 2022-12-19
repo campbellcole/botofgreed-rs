@@ -31,7 +31,7 @@ serenity = { version = "*", default-features = false, features = [
     "rustls_backend",
     "model",
     "simd_json",
-], git = "https://github.com/serenity-rs/serenity", branch = "next" }
+], git = "https://github.com/serenity-rs/serenity", rev = "93fa816f4aa47b213d069868109938e432aabe3d" }
 tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
 
 snmalloc-rs = { version = "0.3", features = ["native-cpu"] }
