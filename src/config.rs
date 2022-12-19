@@ -1,10 +1,7 @@
 use once_cell::sync::OnceCell;
 use std::{num::NonZeroU64, path::PathBuf};
 
-use crate::index::{
-    meme::{GreedMeme, MemeType},
-    IndexedMeme,
-};
+use crate::index::IndexedMeme;
 
 use std::env::var;
 
@@ -15,6 +12,7 @@ pub struct TestSettings {
 }
 
 impl TestSettings {
+    #[cfg(debug_assertions)]
     #[inline(always)]
     fn missing_segment(seg: &'static str) -> String {
         format!("missing {seg} segment of TEST_FORCE_MEME=<guild_id>,<channel_id>,<message_id>,<attachment_url>")
@@ -27,6 +25,8 @@ impl TestSettings {
 
     #[cfg(debug_assertions)]
     pub fn from_env() -> Self {
+        use crate::index::meme::{GreedMeme, MemeType};
+
         let mut test_settings = Self::default();
 
         if let Ok(force_meme) = var("TEST_FORCE_MEME") {
