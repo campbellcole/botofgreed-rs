@@ -8,9 +8,10 @@ use crate::index::{
 
 use std::env::var;
 
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct TestSettings {
     pub force_meme: Option<IndexedMeme>,
+    pub delete_all_commands: Option<bool>,
 }
 
 impl TestSettings {
@@ -19,10 +20,10 @@ impl TestSettings {
         format!("missing {seg} segment of TEST_FORCE_MEME=<guild_id>,<channel_id>,<message_id>,<attachment_url>")
     }
 
-    pub fn try_from_env() -> Option<Self> {
-        let force_meme = var("TEST_FORCE_MEME").ok();
+    pub fn from_env() -> Self {
+        let mut test_settings = Self::default();
 
-        if let Some(force_meme) = force_meme {
+        if let Ok(force_meme) = var("TEST_FORCE_MEME") {
             let mut split = force_meme.split(',');
             let guild_id = split
                 .next()
@@ -54,12 +55,17 @@ impl TestSettings {
                 },
             );
 
-            Some(Self {
-                force_meme: Some(meme),
-            })
-        } else {
-            None
+            test_settings.force_meme = Some(meme);
         }
+
+        if let Ok(force_delete_all_commands) = var("TEST_DELETE_ALL_COMMANDS") {
+            test_settings.delete_all_commands = Some(matches!(
+                force_delete_all_commands.to_ascii_lowercase().as_str(),
+                "1" | "true" | "yes" | "y"
+            ));
+        }
+
+        test_settings
     }
 }
 
@@ -68,7 +74,7 @@ pub struct BotConfig {
     pub token: String,
     pub data_folder: PathBuf,
     pub channel_ids: Vec<NonZeroU64>,
-    pub test_settings: Option<TestSettings>,
+    pub test_settings: TestSettings,
 }
 
 static INSTANCE: OnceCell<BotConfig> = OnceCell::new();
@@ -85,7 +91,7 @@ impl BotConfig {
             })
             .collect();
 
-        let test_settings = TestSettings::try_from_env();
+        let test_settings = TestSettings::from_env();
 
         let config = BotConfig {
             token,

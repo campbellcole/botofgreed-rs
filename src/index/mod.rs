@@ -139,10 +139,8 @@ impl Index {
 
     pub async fn get_random_meme(&self) -> Option<&IndexedMeme> {
         #[cfg(debug_assertions)]
-        if let Some(ref test_settings) = BotConfig::get().test_settings {
-            if let Some(ref force_meme) = test_settings.force_meme {
-                return Some(force_meme);
-            }
+        if let Some(ref force_meme) = BotConfig::get().test_settings.force_meme {
+            return Some(force_meme);
         }
 
         if self.all_memes.is_empty() {

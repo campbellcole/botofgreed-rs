@@ -24,6 +24,26 @@ impl EventHandler for GreedHandler {
     async fn ready(&self, ctx: Context, ready: Ready) {
         info!("{} connected. Initializing...", ready.user.name);
 
+        if let Some(true) = BotConfig::get().test_settings.delete_all_commands {
+            let commands = ctx.http.get_global_application_commands().await;
+
+            match commands {
+                Ok(commands) => {
+                    for command in commands {
+                        debug!("deleting global application command: {}", command.name);
+                        if let Err(err) =
+                            ctx.http.delete_global_application_command(command.id).await
+                        {
+                            error!("could not delete global application command: {err}");
+                        }
+                    }
+                }
+                Err(err) => {
+                    error!("could not get global application commands for deletion: {err}");
+                }
+            }
+        }
+
         crate::command::greed::register(&ctx)
             .await
             .unwrap_or_else(|_| {
